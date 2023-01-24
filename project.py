@@ -1,31 +1,41 @@
-import os, re, telegram
+import os, re, logging, time
+from collections import deque
+from telegram import Update
+from telegram.ext import ApplicationBuilder, ContextTypes, CommandHandler
 
-##HTTP API from telegrambot - BotFather
-chat_id = '902953144'
-api_key = '5917426187:AAEI7WL8HNeJGs0Az37mYOTRK9DaWHMPXxc'
+logging.basicConfig(
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    level=logging.INFO
+)
 
-##Function to send messages to telegram
-def bot(msg):
-  bot = telegram.Bot(token=api_key)
-  bot.send_message(chat_id=chat_id, text=str(msg))
+application = ApplicationBuilder().token('5917426187:AAEI7WL8HNeJGs0Az37mYOTRK9DaWHMPXxc').build()
 
 ## Main Function, reads file and uses regex to match only Suricata alerts with priority higher than 3
-def run():
-  file = open('data-sample.log', 'r')
-  lines = file.readlines()
-
-  count = 0
-
-  for line in lines:
-    count += 1
-    regex = str(re.search("Priority: [3-9]", line))
-    if (regex == "None"):
+def alert(n=1):
+  ## Return the last n lines of a file
+  with open('data-sample.log') as f:
+      ## Regex to check for alert with priority higher than 3
+      d = deque(f, n)
+      regex = str(re.search("Priority: [2-9]", d[0]))
+      if (regex == "None"):
+        return False
+      else:
+        return d.pop()
+  
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+  while True:
+    if (alert() == False):
+      #time.wait
       pass
     else:
-      #msg = 'Suricata-Alert: ' + str(count) + ' - ' + line
-      msg = 'test pepito'
-      bot(msg)
-      #print('line: ' + str(count) + ' - ' + line)
+      msg = alert()
+      time.sleep(5)
+    await context.bot.send_message(chat_id=update.effective_chat.id, text=str(msg))
+
+
 
 if __name__ == '__main__':
-  run()
+  start_handler = CommandHandler('start', start)
+  application.add_handler(start_handler)
+  application.run_polling()
+    
