@@ -1,4 +1,4 @@
-import os, re, logging, time
+import re, logging, time
 from collections import deque
 from telegram import Update
 from telegram.ext import ApplicationBuilder, ContextTypes, CommandHandler
@@ -14,14 +14,16 @@ application = ApplicationBuilder().token('TOKEN').build()
 def alert(n=1):
   ## Return the last n lines of a file
   with open('data-sample.log') as f:
-      ## Regex to check for alert with priority higher than 3
+      ## Create a deque object to store last line in fast.log file.
       d = deque(f, n)
+      ## Regex to check for alert with priority higher than 3
       regex = str(re.search("Priority: [2-9]", d[0]))
       if (regex == "None"):
         return False
       else:
-        return d.pop()
+        return d[0]
 
+## Function to send messages to Telegram.
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
   msg1 = 'texto'
   while True:
