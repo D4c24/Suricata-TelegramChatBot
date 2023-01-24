@@ -21,18 +21,21 @@ def alert(n=1):
         return False
       else:
         return d.pop()
-  
+
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+  msg1 = 'texto'
   while True:
-    if (alert() == False):
-      #time.wait
-      pass
-    else:
-      msg = alert()
+    msg = alert()
+    if (msg == False):
       time.sleep(5)
-    await context.bot.send_message(chat_id=update.effective_chat.id, text=str(msg))
-
-
+    else:
+      if (msg1 == msg):
+        time.sleep(5)
+      else:
+        msg1 = msg
+        await context.bot.send_message(chat_id=update.effective_chat.id, text=str(msg))
+        time.sleep(5)
+    
 
 if __name__ == '__main__':
   start_handler = CommandHandler('start', start)
