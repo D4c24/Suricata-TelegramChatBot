@@ -8,7 +8,7 @@ logging.basicConfig(
     level=logging.INFO
 )
 
-application = ApplicationBuilder().token('5917426187:AAEI7WL8HNeJGs0Az37mYOTRK9DaWHMPXxc').build()
+application = ApplicationBuilder().token('TOKEN').build()
 
 ## Main Function, reads file and uses regex to match only Suricata alerts with priority higher than 3
 def alert(n=1):
